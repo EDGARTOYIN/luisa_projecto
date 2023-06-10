@@ -7,7 +7,7 @@
     <meta charset= "UTF-8">
 </HEAD>
 <main class="container grid container_add1">
-    <form class="borde" id="consultaForm">
+    <form class="borde " id="consultaForm">
         <h1>Consulta un empleado</h1>
 
         <p><label>Nombre:</label>
@@ -26,7 +26,10 @@
 
 
     </form>
-    <div id="resultadoConsulta"></div>
+    <div class="container_add1" id="resultadoConsulta"></div>
+    <div class="container_add1" id="resultadoConsultaTable">
+        <!-- Aquí se mostrará la tabla de empleados -->
+    </div>
 
 </main>
 
@@ -79,7 +82,37 @@
     });
 
     // Manejar el evento de clic del botón "Consultar"
-    document.getElementById("btnConsultar").addEventListener("click", function(event) {
+    // Función para generar la tabla de empleados
+    function generateTable(data) {
+        var tableHtml = "<table><thead><tr><th>Nombre</th><th>Apellido</th><th>Seguro Social</th><th>Departamento</th><th>Fecha de nacimiento</th>" +
+            "<th>address</th><th>sexo</th><th>salario</th></tr></thead><tbody>";
+
+        // Iterar sobre los empleados y generar las filas de la tabla
+        data.forEach(function(employee) {
+            tableHtml += "<tr>";
+            tableHtml += "<td>" + employee.Fname + "</td>";
+            tableHtml += "<td>" + employee.Lname + "</td>";
+            tableHtml += "<td>" + employee.Ssn + "</td>";
+            tableHtml += "<td>" + employee.Dno + "</td>";
+            tableHtml += "<td>" + employee.Bdate + "</td>";
+            tableHtml += "<td>" + employee.Address + "</td>";
+            tableHtml += "<td>" + employee.Sex + "</td>";
+            tableHtml += "<td>" + employee.Salary + "</td>";
+
+
+
+
+            tableHtml += "</tr>";
+        });
+
+        tableHtml += "</tbody></table>";
+        return tableHtml;
+    }
+
+    // ...
+
+    // Manejar el evento de clic del botón "Consultar"
+    document.getElementById("btnConsultar").addEventListener("click", function (event) {
         event.preventDefault(); // Prevenir el envío del formulario
 
         // Obtener los valores de los campos de búsqueda
@@ -93,19 +126,23 @@
 
         // Realizar la solicitud AJAX a la API utilizando fetch
         fetch(url)
-            .then(function(response) {
+            .then(function (response) {
                 if (response.ok) {
                     return response.json(); // Obtener la respuesta como JSON
                 } else {
                     throw new Error("Error en la solicitud: " + response.status);
                 }
             })
-            .then(function(data) {
+            .then(function (data) {
                 // Mostrar los datos del empleado en formato JSON
                 var jsonHtml = "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
                 document.getElementById("resultadoConsulta").innerHTML = jsonHtml;
+
+                // Generar la tabla de empleados y mostrarla
+                var tableHtml = generateTable(data);
+                document.getElementById("resultadoConsultaTable").innerHTML = tableHtml;
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error(error);
             });
     });
